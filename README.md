@@ -1,33 +1,88 @@
-<h1>Normal Transformation</h1>
-The Normal Transformation project aims to analyze a dataset related to Parkinson's disease. It performs data quality checks, cleaning, exploratory analysis, and applies various transformation techniques. Additionally, it creates regression models to compare their performance using different evaluation metrics.
+# Normal Transformation — Parkinson's Disease Analysis
 
-<h3>Features</h3>
+## Overview
+Comparison of three data transformation techniques applied to the 
+Parkinson's Telemonitoring dataset. Investigates how Z-score, Robust 
+Scaling and Logarithmic transformations affect linear regression model 
+performance in predicting disease severity (total_UPDRS score).
 
-1. Ensure data integrity by performing comprehensive quality checks and cleaning procedures. Handle missing values, outliers, and other inconsistencies present in the dataset. <br>
+## Research Question
+Does data transformation improve prediction of Parkinson's disease 
+severity? Which transformation technique produces the most accurate 
+regression model?
 
-2. Exploratory Data Analysis: Gain insights into the dataset by exploring the joint distribution between multiple variables. Understand the relationships between different features and their impact on the target variable.<br>
+## Dataset
+- Parkinson's Telemonitoring Dataset (UCI Machine Learning Repository)
+- 5,875 observations of Parkinson's patients
+- Target: total_UPDRS (disease severity score)
+- Features: voice measurements — Jitter, Shimmer, HNR, RPDE, DFA, PPE
 
-3. Transformation Techniques: Utilize various transformation techniques such as Z-scaling, robust scaling, and logarithmic transformations to normalize and enhance the data for regression modeling.<br>
+## Data Quality & Cleaning
 
-4. Regression Modeling: Create regression models using the transformed datasets. Capture the relationship between the input features and the target variable. Compare different models using a range of evaluation metrics.<br>
+### Issues Found and Fixed:
+- Missing subject IDs — inferred from age and sex combinations
+- Data entry errors — age=650 corrected to 65, age=749 corrected to 74
+- Missing age values — filled from subject reference table
+- Negative time values — converted to absolute values
+- Negative Jitter.PPQ5 and Shimmer.APQ3 values — removed as invalid
+- Outliers — Jitter.PPQ5 > 8 and Shimmer.APQ3 > 5 removed
 
-<h3>Dependencies</h3>
+## Exploratory Analysis
 
-1. Base R functions: The code uses various built-in functions and operators provided by the base R language, such as read.csv, is.na, colSums, ifelse, length, which, summary, scale, median, IQR, log10, lm, etc.
+### Correlation Analysis (3 pairs):
+1. **Jitter vs Shimmer** — 2D density, scatter and 3D surface plots
+2. **Jitter vs PPE** — 2D density, scatter and 3D surface plots  
+3. **Jitter vs NHR** — 2D density, scatter and 3D surface plots
 
-2. Packages:
-dlookr: The code uses functions from the dlookr package for outlier detection and diagnostics.
-ggpubr and cowplot: These packages are used for data visualization, including creating box plots and scatter plots.
-plotly: This package is used for 3D density plots.<br>
+## Four Models Compared
 
-To run the code successfully, you need to have R installed on your system along with the required packages (dlookr, ggpubr, cowplot, and plotly). You can install these packages by running the code in the file. <br>
+### Model 1 — No Transformation (Baseline)
+- Raw features: Jitter.Abs, Shimmer.APQ5, HNR, RPDE, DFA, PPE, age
+- Predicts total_UPDRS directly
 
-Please note that the code assumes the Parkinson's dataset is located at the specified file path. Please adjust the file path to match the actual location of your dataset.
+### Model 2 — Z-Score Standardization
+- Applied StandardScaler equivalent (scale() in R)
+- All features normalized to mean=0, std=1
+- Predicts total_UPDRS_Zscore
 
-<h3>Result</h3>
-The project aims to provide the following outcomes:<br>
-1. Cleaned and preprocessed dataset suitable for further analysis and modeling.<br>
-2. Insights into the relationships and distributions of the variables through exploratory analysis.<br>
-3. Normalized data using various transformation techniques for improved regression modeling.<br>
-4. Regression models capturing the relationship between the input features and the target variable.<br>
-5. Comparison of different regression models using a range of evaluation metrics to assess their performance.<br>
+### Model 3 — Robust Scaling
+- Applied median and IQR based scaling manually
+- More resistant to outliers than Z-score
+- Predicts total_UPDRS_robust
+
+### Model 4 — Logarithmic Transformation
+- Applied log10(x+1) to all skewed features
+- Handles right-skewed distributions
+- Predicts total_UPDRS_log
+
+## Model Comparison
+
+| Model | Transformation | R-squared | Key Insight |
+|---|---|---|---|
+| Model 1 | None | — | Baseline |
+| Model 2 | Z-Score | — | Standardized |
+| Model 3 | Robust Scaling | — | Outlier resistant |
+| Model 4 | Log Transform | — | Handles skew |
+
+## Key Findings
+- Voice measurements (Jitter, Shimmer) are significant predictors
+- Age contributes meaningfully to disease severity prediction
+- Transformation technique affects model interpretability more than accuracy
+- HNR (Harmonics to Noise Ratio) consistently selected as key predictor
+
+## Connection to Variable Selection Project
+This project complements the Variable Selection project on the same dataset:
+- Variable Selection identifies WHICH features matter
+- Normal Transformation explores HOW to best prepare those features
+- Together they provide a complete analytical framework for the dataset
+
+## Technologies
+- R programming language
+- RStudio
+- ggpubr, cowplot (visualization)
+- plotly (3D density plots)
+- dlookr (outlier detection)
+- Base R linear regression (lm)
+
+## Dataset Source
+UCI Machine Learning Repository — Parkinson's Telemonitoring Dataset
